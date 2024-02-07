@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\event;
-use Illuminate\Http\Request;
+use Illuminate\Http\PostRequest;
 
 class EventController extends Controller
 {
@@ -12,7 +13,9 @@ class EventController extends Controller
      */
     public function index()
     {
-        //
+        $events = Event::all();
+
+        return view("admin.events.index", compact("events"));
     }
 
     /**

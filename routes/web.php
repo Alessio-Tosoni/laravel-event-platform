@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController; //<---- Import del controller precedentemente creato!
+use App\Http\Controllers\Admin\EventController;
+use App\Models\Event;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +18,8 @@ use App\Http\Controllers\Admin\DashboardController; //<---- Import del controlle
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $events = Event::all();
+    return view('welcome', compact("events"));
 });
 
 Route::middleware(['auth'])
@@ -27,6 +31,8 @@ Route::middleware(['auth'])
         // - il percorso "/" diventa "admin/"
         // - il nome della rotta ->name("dashboard") diventa ->name("admin.dashboard")
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::resource("events", EventController::class);
     });
 
 require __DIR__ . '/auth.php';
