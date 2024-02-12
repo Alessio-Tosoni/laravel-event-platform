@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\event;
-use Illuminate\Http\PostRequest;
+use App\Models\Event;
+use App\Models\Tag;
+use App\Http\Requests\EventRequest;
 
 class EventController extends Controller
 {
@@ -23,23 +24,39 @@ class EventController extends Controller
      */
     public function create()
     {
-        //
+
+        $tags = Tag::all();
+
+        return view("admin.events.create", compact("tags"));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(EventRequest $request)
     {
-        //
+        $validati = $request->validated();
+
+        $newEvent = new Event();
+        $newEvent->fill($validati);
+        $newEvent->save();
+
+        if($request->tags){
+            $newEvent->tags()->attach($request->tags);
+        }
+
+
+        return redirect()->route("admin.events.index");
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(event $event)
+    public function show(string $id)
     {
-        //
+        $dettaglio = Event::find($id);
+
+       return view("admin.events.show", compact("dettaglio"));
     }
 
     /**
@@ -47,15 +64,23 @@ class EventController extends Controller
      */
     public function edit(event $event)
     {
-        //
+        return view("admin.events.edit", compact("event"));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, event $event)
+    public function update(EventRequest $request, Event $event)
     {
-        //
+        $data= $request->all();
+
+        $event->name = $data["name"];
+        $event->description = $data['description'];
+        $event->location = $data['location'];
+        $event->date = $data['date'];
+        $event->update();
+
+        return redirect()->route('admin.events.show', $event->id);
     }
 
     /**
@@ -63,6 +88,10 @@ class EventController extends Controller
      */
     public function destroy(event $event)
     {
-        //
+        
+        $event->delete();
+
+        return redirect()->route('admin.events.index'); 
+        
     }
 }
